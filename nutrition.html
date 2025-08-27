@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gym Utilities</title>
+  <style>
+    :root {
+      --primary-color: red;
+      --white-color: white;
+      --border-radius-small: 8px;
+      --font-weight-normal: 400;
+      --menu-font-size: 16px;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #171819;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      color: #000;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      color: red;
+    }
+
+    .top-right-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .toggle-label {
+      margin-right: 8px;
+      font-weight: bold;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: gray;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 4px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: red;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: red;
+    }
+
+    input[type="number"],
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    .custom-btn {
+      background: var(--white-color);
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      border-radius: var(--border-radius-small);
+      padding: 14px 24px;
+      font-size: var(--menu-font-size);
+      font-weight: var(--font-weight-normal);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .custom-btn:hover {
+      background: var(--primary-color);
+      color: var(--white-color);
+    }
+
+    .goal-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .goal-buttons button {
+      flex: 1;
+      min-width: 120px;
+      background: var(--white-color);
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      border-radius: var(--border-radius-small);
+      padding: 14px 20px;
+      transition: 0.3s;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .goal-buttons button:hover {
+      background: var(--primary-color);
+      color: var(--white-color);
+    }
+
+    .goal-buttons button.selected {
+      background-color: var(--primary-color);
+      color: var(--white-color);
+    }
+
+    .calculate-button {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .result {
+      margin-top: 20px;
+      text-align: center;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+    }
+
+    .quote {
+      margin-top: 40px;
+      font-size: 18px;
+      font-style: italic;
+      text-align: center;
+      color: #ff6347; /* Tomato color */
+    }
+
+    /* Animation for result */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .activity-level-description {
+      font-size: 14px;
+      color: #aaa;
+      margin-top: 5px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="top-right-toggle">
+      <span class="toggle-label">Imperial</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="unitToggle" onchange="toggleUnits()">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <h1>Gym Utilities</h1>
+
+    <div class="input-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" placeholder="Enter your name">
+    </div>
+
+    <div class="input-group">
+      <label for="weight">Weight (kg)</label>
+      <input type="number" id="weight" placeholder="Enter weight">
+    </div>
+
+    <div class="input-group">
+      <label for="height">Height (cm)</label>
+      <input type="number" id="height" placeholder="Enter height">
+    </div>
+
+    <div class="input-group">
+      <label for="age">Age (years)</label>
+      <input type="number" id="age" placeholder="Enter age">
+    </div>
+
+    <div class="input-group">
+      <label for="gender">Gender</label>
+      <select id="gender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label for="activity-level">Activity Level</label>
+      <select id="activity-level">
+        <option value="sedentary">Sedentary (little or no exercise)</option>
+        <option value="light">Lightly active (light exercise 1-3 days/week)</option>
+        <option value="moderate">Moderately active (moderate exercise 3-5 days/week)</option>
+        <option value="active">Very active (hard exercise 6-7 days/week)</option>
+        <option value="extra-active">Extra active (very hard exercise, training twice a day)</option>
+      </select>
+      <div class="activity-level-description" id="activity-description"></div>
+    </div>
+
+    <div class="goal-buttons">
+      <button id="recomposition-btn" onclick="setGoal('recomposition')">Body Recomposition</button>
+      <button id="bulking-btn" onclick="setGoal('bulking')">Bulking</button>
+      <button id="cutting-btn" onclick="setGoal('cutting')">Cutting</button>
+      <button id="weight-loss-btn" onclick="setGoal('weight-loss')">Weight Loss</button>
+    </div>
+
+    <div class="calculate-button">
+      <button class="custom-btn" onclick="calculateResults()">Calculate</button>
+    </div>
+
+    <div class="result" id="result"></div>
+    <div class="error" id="errorMsg"></div>
+
+    <!-- Random Motivational Quote -->
+    <div class="quote" id="quote" style="display:none;"></div>
+  </div>
+
+  <script>
+    let selectedGoal = 'weight-loss';
+    let isImperial = false;
+
+    const quotes = [
+      "💪 'Success doesn't come from what you do occasionally, it comes from what you do consistently.'",
+      "🔥 'The pain you feel today will be the strength you feel tomorrow.'",
+      "🚀 'Don’t stop when you’re tired. Stop when you’re done.'",
+      "🏋️ 'Success is the sum of small efforts, repeated day in and day out.'",
+      "⚡ 'The only bad workout is the one that didn’t happen.'"
+    ];
+
+    const activityDescriptions = {
+      'sedentary': 'Little or no exercise, desk job.',
+      'light': 'Light exercise or sports 1-3 days/week.',
+      'moderate': 'Moderate exercise or sports 3-5 days/week.',
+      'active': 'Hard exercise or sports 6-7 days a week.',
+      'extra-active': 'Very hard exercise, physical job, or training twice a day.'
+    };
+
+    function setGoal(goal) {
+      selectedGoal = goal;
+      document.querySelectorAll('.goal-buttons button').forEach(button => {
+        button.classList.remove('selected');
+      });
+      document.getElementById(`${goal}-btn`).classList.add('selected');
+      document.getElementById('result').innerHTML = '';
+      document.getElementById('errorMsg').textContent = '';
+    }
+
+    function toggleUnits() {
+      isImperial = document.getElementById('unitToggle').checked;
+      document.querySelector("label[for='weight']").innerText = isImperial ? "Weight (lbs)" : "Weight (kg)";
+      document.querySelector("label[for='height']").innerText = isImperial ? "Height (inches)" : "Height (cm)";
+    }
+
+    function calculateResults() {
+      const name = document.getElementById('name').value.trim();
+      const weightInput = parseFloat(document.getElementById('weight').value);
+      const heightInput = parseFloat(document.getElementById('height').value);
+      const age = parseInt(document.getElementById('age').value);
+      const gender = document.getElementById('gender').value;
+      const activityLevel = document.getElementById('activity-level').value;
+
+      if (!name || isNaN(weightInput) || isNaN(heightInput) || isNaN(age)) {
+        document.getElementById('errorMsg').textContent = 'Please fill in all the fields.';
+        return;
+      }
+
+      // Convert imperial to metric
+      const weight = isImperial ? weightInput * 0.453592 : weightInput;
+      const height = isImperial ? heightInput * 2.54 : heightInput;
+
+      let bmr;
+      if (gender === 'male') {
+        bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+      } else {
+        bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+      }
+
+      let tdee;
+      switch (activityLevel) {
+        case 'sedentary': tdee = bmr * 1.2; break;
+        case 'light': tdee = bmr * 1.375; break;
+        case 'moderate': tdee = bmr * 1.55; break;
+        case 'active': tdee = bmr * 1.725; break;
+        case 'extra-active': tdee = bmr * 1.9; break;
+      }
+
+      let calorieIntake = tdee;
+      if (selectedGoal === 'bulking') {
+        calorieIntake += 500;
+      } else if (selectedGoal === 'cutting') {
+        calorieIntake -= 500;
+      }
+
+      document.getElementById('result').innerHTML = `
+        <h3>Hello ${name}!</h3>
+        <p>Your BMR: ${bmr.toFixed(2)} kcal/day</p>
+        <p>Your TDEE: ${tdee.toFixed(2)} kcal/day</p>
+        <p>Your daily calorie intake for <strong>${selectedGoal.replace('-', ' ')}</strong>: <br><strong>${calorieIntake.toFixed(2)} kcal/day</strong></p>
+      `;
+      
+      // Show the motivational quote after calculation
+      showMotivationalQuote(name);
+    }
+
+    function showMotivationalQuote(name) {
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      const quoteElement = document.getElementById('quote');
+      quoteElement.innerText = `Hey ${name}, ${randomQuote}`;
+      quoteElement.style.display = 'block';  // Make quote visible
+    }
+
+    // Show activity level description
+    document.getElementById('activity-level').addEventListener('change', function() {
+      const activityLevel = this.value;
+      document.getElementById('activity-description').innerText = activityDescriptions[activityLevel];
+    });
+
+  </script>
+
+</body>
+</html>
