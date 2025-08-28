@@ -121,6 +121,25 @@
     /* Simple range label */
     .range-value { min-width:34px; display:inline-block; text-align:center; }
 
+    /* ===== HERO subtitle (first H6) smaller & mobile-friendly, keep typing effect ===== */
+    .hero .hero-text h6{
+      font-size: clamp(12px, 3.6vw, 16px);
+      line-height: 1.25;
+      margin-bottom: .5rem;
+      letter-spacing: .5px;
+    }
+    .hero .wrapper,
+    .hero .typing-demo,
+    .hero .cursor{
+      display:inline-block;
+      max-width:100%;
+      white-space:nowrap;
+      overflow:hidden;
+      vertical-align:bottom;
+    }
+    @media (max-width: 360px){
+      .hero .hero-text h6{ font-size: clamp(11px, 3.4vw, 14px); }
+    }
   </style>
 
 <!--
@@ -337,7 +356,7 @@ https://www.tooplate.com/view/2119-gymso-fitness
           <div class="class-thumb">
             <img src="images/class/yoga-class.jpg" class="img-fluid" alt="Class" loading="lazy">
             <div class="class-info" id="exercise">
-              <h3 class="mb-1">Workouts</h3>
+              <h3 class="mb-1">Workout Types</h3>
               <span class="class-price"><a class="arrow" href="WorkoutSplits.html" target="_blank">-></a></span>
               <p class="mt-3">Click here for workout plans</p>
             </div>
@@ -348,8 +367,8 @@ https://www.tooplate.com/view/2119-gymso-fitness
           <div class="class-thumb">
             <img src="images/class/crossfit-class.jpg" class="img-fluid" alt="Class" loading="lazy">
             <div class="class-info">
-              <h3 class="mb-1">Diet Plan</h3>
-              <span class="class-price"><a class="arrow" href="#">-></a></span>
+              <h3 class="mb-1">Nutrition & Food</h3>
+              <span class="class-price"><a class="arrow" href="foodAndNutrition.html">-></a></span>
               <p class="mt-3">Click here for diet plans</p>
             </div>
           </div>
@@ -360,7 +379,7 @@ https://www.tooplate.com/view/2119-gymso-fitness
             <img src="images/class/cardio-class.jpg" class="img-fluid" alt="Class" loading="lazy">
             <div class="class-info">
               <h3 class="mb-1">Workout Utilities</h3>
-              <span class="class-price"><a class="arrow" href="nutrition.html" target="_blank">-></a></span>
+              <span class="class-price"><a class="arrow" href="gymUtilities.html" target="_blank">-></a></span>
               <p class="mt-3">Click here for other utilities</p>
             </div>
           </div>
@@ -775,16 +794,13 @@ https://www.tooplate.com/view/2119-gymso-fitness
       const calories=Math.round(TDEE*(1+adj/100));
 
       // Macros
-      // Protein per kg: cut 2.0, recomp 1.8, bulk 1.6
       const ppk = goal==='cut'?2.0 : (goal==='bulk'?1.6:1.8);
       const proteinG = Math.round(ppk*kg);
 
-      // Fat %: cut 25%, recomp 30%, bulk 30%
       const fatPct = goal==='cut'?0.25:0.30;
       const fatCals = Math.round(calories*fatPct);
       const fatG = Math.round(fatCals/9);
 
-      // Carbs = remaining cals
       const protCals = proteinG*4;
       const remaining = Math.max(calories - protCals - fatCals, 0);
       const carbsG = Math.round(remaining/4);
@@ -834,7 +850,6 @@ https://www.tooplate.com/view/2119-gymso-fitness
         note='Use big lifts first (squat/hinge/press/pull), finish with accessories and core.';
       }
 
-      // Nudge per goal
       const goalNote = (goal==='fatloss')
         ? 'Prioritize steps + small calorie deficit. Keep intensity, manage volume.'
         : (goal==='muscle')
