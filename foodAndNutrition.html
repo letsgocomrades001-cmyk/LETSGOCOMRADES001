@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Nutrition & Recipe Finder</title>
+  <style>
+    /* ===== Base (from File 2 with small additions) ===== */
+    :root {
+      --primary-color: red;
+      --white-color: white;
+      --border-radius-small: 8px;
+      --font-weight-normal: 400;
+      --menu-font-size: 16px;
+    }
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #171819;
+      color: #fff; /* keep dark page vibe like both originals */
+      margin: 0;
+      padding: 20px;
+    }
+
+    /* Top mode toggle */
+    .mode-toggle {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 10px auto 20px;
+      max-width: 800px;
+    }
+    .mode-toggle button {
+      flex: 1;
+      background: var(--white-color);
+      color: #333;
+      border: 1px solid #ddd;
+      padding: 10px 16px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .25s ease;
+    }
+    .mode-toggle button.active {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      color: var(--white-color);
+      box-shadow: 0 6px 16px rgba(224, 33, 33, 0.35);
+    }
+
+    /* Shared container look (both files used a white card) */
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: var(--white-color);
+      color: #000; /* ensure text inside card is dark */
+      padding: 30px;
+      border-radius: var(--border-radius-small);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .hidden { display: none; }
+
+    /* ===== File 2 styles kept intact ===== */
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      color: var(--primary-color);
+      margin-top: 0;
+    }
+    p { font-size: 16px; color: #333; }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      font-size: var(--menu-font-size);
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius-small);
+    }
+    button.action {
+      background: var(--primary-color);
+      color: var(--white-color);
+      border: 1px solid var(--primary-color);
+      padding: 12px 24px;
+      font-size: var(--menu-font-size);
+      font-weight: var(--font-weight-normal);
+      border-radius: var(--border-radius-small);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button.action:hover { background: var(--white-color); color: var(--primary-color); }
+    .toggle-container { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .toggle-switch {
+      width: 50px; height: 24px; background-color: #ccc;
+      border-radius: 12px; position: relative; transition: background-color 0.3s; cursor: pointer;
+    }
+    .toggle-switch .toggle-circle {
+      width: 20px; height: 20px; background-color: var(--white-color);
+      border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.3s;
+    }
+    .toggle-switch.active { background-color: var(--primary-color); }
+    .toggle-switch.active .toggle-circle { transform: translateX(26px); }
+    .nutrition-output { margin-top: 30px; }
+    .nutrition { border-bottom: 1px solid #ccc; padding: 10px 0; }
+    .nutrition h3 { margin: 0; color: var(--primary-color); }
+    .comparison-container { display: flex; justify-content: space-between; gap: 30px; }
+    .nutrition-col {
+      flex: 1; border: 1px solid #ccc; border-radius: var(--border-radius-small);
+      padding: 20px; background-color: #fafafa;
+    }
+    @media (max-width: 768px) { .comparison-container { flex-direction: column; } }
+    #secondItem input[type="text"] { margin-top: 20px; }
+    #secondItem { margin-top: 20px; }
+
+    /* ===== File 1 specific styles kept intact ===== */
+    /* Keep the recipe look the same as original file */
+    .recipe-wrap h1 { color: #000; } /* ensure visible heading in white card */
+    .recipe-wrap textarea {
+      width: 100%; height: 120px; padding: 12px; font-size: 15px;
+      border-radius: 8px; border:1px solid #ccc;
+    }
+    .recipe-wrap .recipe-btn {
+      margin-top: 15px; padding: 12px 24px; font-size: 16px; font-weight:bold;
+      cursor: pointer; border-radius:8px; border:none; background:red; color:#fff;
+    }
+    .recipe-wrap .recipe-btn:hover { background: darkred; }
+    .recipe { margin-top: 25px; }
+    .recipe-wrap h2 { color: red; margin-bottom:10px; }
+    .recipe-wrap p { line-height:1.6; color:#333; }
+  </style>
+</head>
+<body>
+
+  <!-- Mode Toggle -->
+  <div class="mode-toggle">
+    <button id="btnNutrition" class="active" onclick="showSection('nutrition')">Nutrition</button>
+    <button id="btnRecipe" onclick="showSection('recipe')">Recipe</button>
+  </div>
+
+  <!-- ===== Nutrition Section (File 2 content) ===== -->
+  <div id="nutritionSection" class="container">
+    <h1>Find and compare nutrition values here</h1>
+    <p>Enter a food item and brand (optional if Branded is toggled on):</p>
+
+    <!-- First food input -->
+    <input type="text" id="foodInput1" placeholder="e.g., apple, spinach, banana">
+
+    <!-- Toggle for selecting branded or foundation foods -->
+    <div class="toggle-container">
+      <div class="toggle-switch" id="brandToggle1" onclick="toggleBrandInput(1)">
+        <div class="toggle-circle"></div>
+      </div>
+      <label for="brandToggle1">Search using branded foods</label>
+    </div>
+
+    <!-- Brand Name Input (hidden by default) -->
+    <input type="text" id="brandNameInput1" placeholder="e.g., Kroger, Great Value" style="display:none;">
+
+    <!-- Button to add second item for comparison -->
+    <button class="action" onclick="addSecondItem()">Add Second Item to Compare</button>
+
+    <!-- Second food input (initially hidden) -->
+    <div id="secondItem" style="display:none;">
+      <input type="text" id="foodInput2" placeholder="e.g., apple, spinach, banana">
+
+      <!-- Toggle for selecting branded or foundation foods for second item -->
+      <div class="toggle-container">
+        <div class="toggle-switch" id="brandToggle2" onclick="toggleBrandInput(2)">
+          <div class="toggle-circle"></div>
+        </div>
+        <label for="brandToggle2">Search using branded foods</label>
+      </div>
+
+      <!-- Brand Name Input (hidden by default) -->
+      <input type="text" id="brandNameInput2" placeholder="e.g., Kroger, Great Value" style="display:none;">
+    </div>
+
+    <button class="action" onclick="fetchNutrition()">Get Nutrition Info</button>
+
+    <div class="nutrition-output" id="nutritionResult"></div>
+  </div>
+
+  <!-- ===== Recipe Section (File 1 content) ===== -->
+  <div id="recipeSection" class="container hidden">
+    <div class="recipe-wrap">
+      <h1>Find Your Recipe</h1>
+      <textarea id="ingredientsInput" placeholder="Enter Recipe Name"></textarea>
+      <button class="recipe-btn" onclick="generatePlan()">Generate Recipe</button>
+
+      <div class="recipe" id="recipe"></div>
+    </div>
+  </div>
+
+  <script>
+    /* ===== View Toggle Logic ===== */
+    function showSection(which) {
+      const nutrition = document.getElementById('nutritionSection');
+      const recipe = document.getElementById('recipeSection');
+      const btnN = document.getElementById('btnNutrition');
+      const btnR = document.getElementById('btnRecipe');
+
+      if (which === 'nutrition') {
+        nutrition.classList.remove('hidden');
+        recipe.classList.add('hidden');
+        btnN.classList.add('active');
+        btnR.classList.remove('active');
+      } else {
+        recipe.classList.remove('hidden');
+        nutrition.classList.add('hidden');
+        btnR.classList.add('active');
+        btnN.classList.remove('active');
+      }
+    }
+
+    /* ===== File 2 scripts kept intact (Nutrition / USDA FDC) ===== */
+    let isBrandSearchEnabled1 = false;
+    let isBrandSearchEnabled2 = false;
+    let isSecondItemAdded = false; // Track if second item is added
+    const apiKey = "U96EXCELPlpuF6xzVe7lvsaXRi51PXJHymBOIaUu";
+
+    function toggleBrandInput(index) {
+      const toggle = document.getElementById(`brandToggle${index}`);
+      const brandInput = document.getElementById(`brandNameInput${index}`);
+      const isActive = toggle.classList.toggle("active");
+      brandInput.style.display = isActive ? "block" : "none";
+
+      if (index === 1) {
+        isBrandSearchEnabled1 = isActive;
+      } else {
+        isBrandSearchEnabled2 = isActive;
+      }
+    }
+
+    function addSecondItem() {
+      document.getElementById('secondItem').style.display = 'block';
+      isSecondItemAdded = true; // Set flag when second item is added
+    }
+
+    async function fetchNutrition() {
+      const input1 = document.getElementById('foodInput1').value.trim();
+      const brandName1 = isBrandSearchEnabled1 ? document.getElementById('brandNameInput1').value.trim() : '';
+      const input2 = isSecondItemAdded ? document.getElementById('foodInput2').value.trim() : '';
+      const brandName2 = isSecondItemAdded && isBrandSearchEnabled2 ? document.getElementById('brandNameInput2').value.trim() : '';
+
+      const nutritionDiv = document.getElementById('nutritionResult');
+      nutritionDiv.innerHTML = '<p>Loading...</p>';
+
+      if (!input1 || (isSecondItemAdded && !input2)) {
+        nutritionDiv.innerHTML = '<p>Please enter valid food items.</p>';
+        return;
+      }
+
+      try {
+        // Fetch first item data
+        let query1 = `${input1}${brandName1 ? " " + brandName1 : ""}`;
+        let url1 = `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${apiKey}&query=${encodeURIComponent(query1)}&dataType=${isBrandSearchEnabled1 ? "Branded" : "Foundation"}&pageSize=1`;
+
+        const searchResponse1 = await fetch(url1);
+        const searchData1 = await searchResponse1.json();
+
+        if (!searchData1.foods || searchData1.foods.length === 0) {
+          nutritionDiv.innerHTML = `<p>No food found for "${input1}".</p>`;
+          return;
+        }
+
+        const food1 = searchData1.foods[0];
+        const fdcId1 = food1.fdcId;
+
+        const detailsResponse1 = await fetch(`https://api.nal.usda.gov/fdc/v1/food/${fdcId1}?api_key=${apiKey}`);
+        const foodDetails1 = await detailsResponse1.json();
+
+        const nutrients1 = {};
+        foodDetails1.foodNutrients.forEach(n => {
+          nutrients1[n.nutrient.name] = n.amount;
+        });
+
+        const format = (nutrients, name, unit = "g", precision = 2) => {
+          return (nutrients[name] ? nutrients[name].toFixed(precision) + " " + unit : "N/A");
+        };
+
+        const portion1 = foodDetails1.servingSize ? `${foodDetails1.servingSize} ${foodDetails1.servingSizeUnit || 'g'}` : '100g';
+
+        let resultHTML = `
+          <div class="comparison-container">
+            <div class="nutrition-col">
+              <h3>${food1.description}</h3>
+              <p><strong>Portion:</strong> ${portion1}</p>
+              <p><strong>Energy:</strong> ${format(nutrients1, "Energy", "kcal")}</p>
+              <p><strong>Protein:</strong> ${format(nutrients1, "Protein")}</p>
+              <p><strong>Total Fat:</strong> ${format(nutrients1, "Total lipid (fat)")}</p>
+              <p><strong>Carbohydrates:</strong> ${format(nutrients1, "Carbohydrate, by difference")}</p>
+              <p><strong>Sugars:</strong> ${format(nutrients1, "Sugars, total including NLEA")}</p>
+              <p><strong>Fiber:</strong> ${format(nutrients1, "Fiber, total dietary")}</p>
+              <p><strong>Sodium:</strong> ${format(nutrients1, "Sodium, Na", "mg")}</p>
+            </div>
+        `;
+
+        // If second item is added, fetch second item data
+        if (isSecondItemAdded) {
+          let query2 = `${input2}${brandName2 ? " " + brandName2 : ""}`;
+          let url2 = `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${apiKey}&query=${encodeURIComponent(query2)}&dataType=${isBrandSearchEnabled2 ? "Branded" : "Foundation"}&pageSize=1`;
+
+          const searchResponse2 = await fetch(url2);
+          const searchData2 = await searchResponse2.json();
+
+          if (!searchData2.foods || searchData2.foods.length === 0) {
+            nutritionDiv.innerHTML = `<p>No food found for "${input2}".</p>`;
+            return;
+          }
+
+          const food2 = searchData2.foods[0];
+          const fdcId2 = food2.fdcId;
+
+          const detailsResponse2 = await fetch(`https://api.nal.usda.gov/fdc/v1/food/${fdcId2}?api_key=${apiKey}`);
+          const foodDetails2 = await detailsResponse2.json();
+
+          const nutrients2 = {};
+          foodDetails2.foodNutrients.forEach(n => {
+            nutrients2[n.nutrient.name] = n.amount;
+          });
+
+          const portion2 = foodDetails2.servingSize ? `${foodDetails2.servingSize} ${foodDetails2.servingSizeUnit || 'g'}` : '100g';
+
+          resultHTML += `
+            <div class="nutrition-col">
+              <h3>${food2.description}</h3>
+              <p><strong>Portion:</strong> ${portion2}</p>
+              <p><strong>Energy:</strong> ${format(nutrients2, "Energy", "kcal")}</p>
+              <p><strong>Protein:</strong> ${format(nutrients2, "Protein")}</p>
+              <p><strong>Total Fat:</strong> ${format(nutrients2, "Total lipid (fat)")}</p>
+              <p><strong>Carbohydrates:</strong> ${format(nutrients2, "Carbohydrate, by difference")}</p>
+              <p><strong>Sugars:</strong> ${format(nutrients2, "Sugars, total including NLEA")}</p>
+              <p><strong>Fiber:</strong> ${format(nutrients2, "Fiber, total dietary")}</p>
+              <p><strong>Sodium:</strong> ${format(nutrients2, "Sodium, Na", "mg")}</p>
+            </div>
+          </div>
+          `;
+        }
+
+        nutritionDiv.innerHTML = resultHTML;
+      } catch (error) {
+        nutritionDiv.innerHTML = '<p>Error fetching data. Please try again later.</p>';
+      }
+    }
+
+    /* ===== File 1 scripts kept intact (Recipe / API Ninjas) ===== */
+    const API_KEY = "mc7KexDOgcuaSLtVal/xgQ==kiljJkNixeojdPeU";
+    const recipeEl = document.getElementById("recipe");
+
+    async function generatePlan() {
+      const ingredients = document.getElementById("ingredientsInput").value.trim();
+      if (!ingredients) return alert("Please enter ingredients.");
+
+      recipeEl.innerHTML = "Loading recipe...";
+
+      try {
+        const recipeResp = await fetch(`https://api.api-ninjas.com/v1/recipe?query=${encodeURIComponent(ingredients)}`, {
+          headers: { "X-Api-Key": API_KEY }
+        });
+        const recipeData = await recipeResp.json();
+        if (!Array.isArray(recipeData) || !recipeData.length) {
+          recipeEl.innerHTML = "No recipes found.";
+          return;
+        }
+
+        const recipe = recipeData[0];
+        recipeEl.innerHTML = `
+          <h2>${recipe.title}</h2>
+          <p><strong>Ingredients:</strong><br>${(recipe.ingredients || '').replace(/\|/g, ', ')}</p>
+          <p><strong>Instructions:</strong><br>${recipe.instructions || 'No instructions provided.'}</p>
+        `;
+      } catch (err) {
+        console.error(err);
+        recipeEl.innerHTML = "Error fetching recipe.";
+      }
+    }
+  </script>
+</body>
+</html>
